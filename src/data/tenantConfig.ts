@@ -9,6 +9,7 @@ export interface TenantConfiguration {
   currentTheme: SeasonalTheme;
   currencySymbol: string;
   defaultMoqEnforced: boolean;
+  logoUrl: string; // <-- We added the logo requirement here
   contact: {
     hotlines: string[];
     whatsappNumber: string;
@@ -24,9 +25,12 @@ export const GLOBAL_TENANT_DATA: TenantConfiguration = {
   businessName: "Bageshwari Tractor",
   tagline: "Your Trusted Partner for Tractor Spare Parts & Agricultural Implements",
   businessType: "B2B_INDUSTRIAL",
-  currentTheme: "WINTER_CLEAN", // The engine maps themes based on this configuration string
+  currentTheme: "WINTER_CLEAN", 
   currencySymbol: "NPR",
   defaultMoqEnforced: true,
+  // If you uploaded to the public folder, use "/logo.png". 
+  // If you have a web link, paste it between the quotes like "https://example.com/my-logo.png"
+  logoUrl: "/logo.png", 
   contact: {
     hotlines: ["9704588501", "9704588502"],
     whatsappNumber: "9779704588501",
