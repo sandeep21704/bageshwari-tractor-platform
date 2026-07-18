@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
 import { UserSession, CartItem, Order, ToastMessage, Product, UserRole } from '../types';
-import { TRANSLATIONS, TranslationKey } from '../utils/translations';
 
 interface AppStateContextProps {
   session: UserSession;
@@ -8,9 +7,6 @@ interface AppStateContextProps {
   orders: Order[];
   toasts: ToastMessage[];
   currentScreen: string;
-  language: 'en' | 'np'; // NEW: Language state
-  t: (key: TranslationKey) => string; // NEW: Translator function
-  toggleLanguage: () => void; // NEW: Switch function
   switchRole: (role: UserRole) => void;
   submitKYC: (formData: any) => void;
   addToCart: (product: Product, quantity: number) => void;
@@ -26,7 +22,6 @@ const AppStateContext = createContext<AppStateContextProps | undefined>(undefine
 
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentScreen, setCurrentScreen] = useState<string>('home');
-  const [language, setLanguage] = useState<'en' | 'np'>('en');
   
   const [session, setSession] = useState<UserSession>({
     isAuthenticated: false,
@@ -38,15 +33,6 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-
-  // THE TRANSLATOR FUNCTION
-  const t = (key: TranslationKey): string => {
-    return TRANSLATIONS[language][key] || key;
-  };
-
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'np' : 'en');
-  };
 
   const navigateTo = (path: string) => {
     setCurrentScreen(path);
@@ -130,7 +116,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <AppStateContext.Provider value={{
-      session, cart, orders, toasts, currentScreen, language, t, toggleLanguage,
+      session, cart, orders, toasts, currentScreen,
       switchRole, submitKYC, addToCart, updateCartQty, removeFromCart, executeCheckout, pushToast, clearToast, navigateTo
     }}>
       {children}
