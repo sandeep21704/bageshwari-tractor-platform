@@ -4,10 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bageshwari Tractor B2B Platform</title>
+    
+    <!-- NEW: Official Google Translate Integration -->
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'en,ne', /* 'ne' is the official code for Nepali */
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    
   </head>
   <body style="margin: 0; padding: 0; background-color: #f8fafc;">
     <div id="root"></div>
-    <!-- This script tag points to the engine starter we built on Day 8 -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
