@@ -24,7 +24,7 @@ export const GLOBAL_TENANT_DATA: TenantConfiguration = {
   businessName: "Bageshwari Tractor",
   tagline: "Your Trusted Partner for Tractor Spare Parts & Agricultural Implements",
   businessType: "B2B_INDUSTRIAL",
-  currentTheme: "DASHAIN_TIHAR_FESTIVE", // The engine maps themes based on this configuration string
+  currentTheme: "WINTER_CLEAN", // The engine maps themes based on this configuration string
   currencySymbol: "NPR",
   defaultMoqEnforced: true,
   contact: {
