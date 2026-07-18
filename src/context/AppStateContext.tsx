@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserSession, CartItem, Order, ToastMessage, Product, UserRole } from '../types';
+import { OVERRIDE_DICTIONARY } from '../utils/dictionary';
 
 interface AppStateContextProps {
   session: UserSession;
@@ -7,6 +8,7 @@ interface AppStateContextProps {
   orders: Order[];
   toasts: ToastMessage[];
   currentScreen: string;
+  tFix: (text: string) => React.ReactNode; // NEW: The Translation Override Shield
   switchRole: (role: UserRole) => void;
   submitKYC: (formData: any) => void;
   addToCart: (product: Product, quantity: number) => void;
@@ -22,6 +24,7 @@ const AppStateContext = createContext<AppStateContextProps | undefined>(undefine
 
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentScreen, setCurrentScreen] = useState<string>('home');
+  const [isNepali, setIsNepali] = useState<boolean>(false);
   
   const [session, setSession] = useState<UserSession>({
     isAuthenticated: false,
@@ -33,6 +36,26 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  // 1. THE GOOGLE DETECTOR: Checks every second if the user selected Nepali in the Google widget
+  useEffect(() => {
+    const checkGoogleLang = setInterval(() => {
+      const cookie = document.cookie;
+      const isNe = cookie.includes('/ne') || document.querySelector('html')?.lang === 'ne';
+      if (isNepali !== isNe) setIsNepali(isNe);
+    }, 1000);
+    return () => clearInterval(checkGoogleLang);
+  }, [isNepali]);
+
+  // 2. THE TRANSLATION SHIELD: Replaces specific words and hides them from Google
+  const tFix = (text: string) => {
+    if (isNepali && OVERRIDE_DICTIONARY[text]) {
+      // The 'notranslate' class is an official command that forces Google Translate to ignore this specific word
+      return <span className="notranslate">{OVERRIDE_DICTIONARY[text]}</span>;
+    }
+    // If not Nepali or not in dictionary, wrap in span so React doesn't crash when Google changes text
+    return <span>{text}</span>;
+  };
 
   const navigateTo = (path: string) => {
     setCurrentScreen(path);
@@ -116,7 +139,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <AppStateContext.Provider value={{
-      session, cart, orders, toasts, currentScreen,
+      session, cart, orders, toasts, currentScreen, tFix,
       switchRole, submitKYC, addToCart, updateCartQty, removeFromCart, executeCheckout, pushToast, clearToast, navigateTo
     }}>
       {children}
