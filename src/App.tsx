@@ -7,7 +7,6 @@ import { Products } from './pages/Products';
 import { Cart } from './pages/Cart';
 import { DealerPortal } from './pages/DealerPortal';
 import { DevTools } from './pages/DevTools';
-// NEW: Imported the About page
 import { About } from './pages/About';
 import { Toast } from './components/ui/Toast';
 
@@ -19,9 +18,9 @@ const RenderActiveView: React.FC = () => {
     case 'cart': return <Cart />;
     case 'dealer-portal': return <DealerPortal />;
     case 'devtools': return <DevTools />;
-    // NEW: Added the route for the About page
     case 'about': return <About />;
-    default: return <Home />;
+    // CHANGED: The default fallback is now the Products catalog
+    default: return <Products />;
   }
 };
 
