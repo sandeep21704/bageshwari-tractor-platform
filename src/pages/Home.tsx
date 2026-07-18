@@ -6,7 +6,7 @@ import { GLOBAL_TENANT_DATA } from '../data/tenantConfig';
 import { getThemeTokens } from '../utils/themeEngine';
 
 export const Home: React.FC = () => {
-  const { navigateTo, session, t } = useAppState();
+  const { navigateTo, session } = useAppState();
   const theme = getThemeTokens(GLOBAL_TENANT_DATA.currentTheme);
   const featuredProducts = B2B_PRODUCTS_CATALOG.filter(p => p.isFeatured);
 
@@ -27,11 +27,11 @@ export const Home: React.FC = () => {
           
           <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <button onClick={() => navigateTo('products')} style={{ padding: '16px 32px', backgroundColor: theme.accentColor, color: '#0f172a', border: 'none', borderRadius: '6px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.2s' }}>
-              {t('nav_products')}
+              Products Catalog
             </button>
             {!session.isAuthenticated && (
               <button onClick={() => navigateTo('dealer-portal')} style={{ padding: '16px 32px', backgroundColor: 'transparent', color: '#fff', border: '2px solid #ffffff', borderRadius: '6px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
-                {t('nav_dealer')}
+                Become a Dealer
               </button>
             )}
           </div>
@@ -40,14 +40,14 @@ export const Home: React.FC = () => {
 
       <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '60px 20px' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h2 style={{ fontSize: '28px', color: '#0f172a', margin: '0 0 10px 0' }}>{t('featured_title')}</h2>
+          <h2 style={{ fontSize: '28px', color: '#0f172a', margin: '0 0 10px 0' }}>Featured Products</h2>
         </div>
         
         <ProductGrid products={featuredProducts} />
         
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
           <button onClick={() => navigateTo('products')} style={{ padding: '12px 24px', backgroundColor: '#f1f5f9', color: '#0f172a', border: '1px solid #cbd5e1', borderRadius: '4px', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer' }}>
-            {t('view_full_inventory')}
+            View Full Inventory →
           </button>
         </div>
       </section>
