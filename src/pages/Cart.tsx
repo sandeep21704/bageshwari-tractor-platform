@@ -4,12 +4,11 @@ import { GLOBAL_TENANT_DATA } from '../data/tenantConfig';
 import { getThemeTokens } from '../utils/themeEngine';
 
 export const Cart: React.FC = () => {
-  const { cart, session, updateCartQty, removeFromCart, executeCheckout, navigateTo, tFix } = useAppState();
+  // We added pushToast here to trigger the error messages!
+  const { cart, session, updateCartQty, removeFromCart, executeCheckout, navigateTo, tFix, pushToast } = useAppState();
   const theme = getThemeTokens(GLOBAL_TENANT_DATA.currentTheme);
   
   const [deliveryMethod, setDeliveryMethod] = useState<string>('STORE_PICKUP_NEPALGUNJ');
-  
-  // Default to Bank Deposit now
   const [paymentTerms, setPaymentTerms] = useState<string>('BANK_DEPOSIT');
 
   const [pickupDetails, setPickupDetails] = useState('');
@@ -24,11 +23,33 @@ export const Cart: React.FC = () => {
 
   const totalSummary = cart.reduce((sum, item) => sum + (calcItemPrice(item.product) * item.quantity), 0);
 
+  // NEW STRICT VALIDATION LOGIC
   const handleCheckout = () => {
+    // 1. Check if the required dispatch details are missing
+    if (deliveryMethod === 'STORE_PICKUP_NEPALGUNJ' && pickupDetails.trim() === '') {
+      pushToast("Missing Dispatch Details", "Please enter the name and phone number of the person collecting the goods.", "error");
+      return; // Stop the checkout
+    }
+    if (deliveryMethod === 'BY_TRANSPORT' && transportDetails.trim() === '') {
+      pushToast("Missing Dispatch Details", "Please enter the Transport Name and Contact Number.", "error");
+      return; // Stop the checkout
+    }
+    if (deliveryMethod === 'BY_BUS' && busDetails.trim() === '') {
+      pushToast("Missing Dispatch Details", "Please enter the Bus Number and Driver Mobile Number.", "error");
+      return; // Stop the checkout
+    }
+
+    // 2. Check if a payment method is somehow not selected
+    if (!paymentTerms || paymentTerms.trim() === '') {
+      pushToast("Missing Payment Details", "Please select a payment method.", "error");
+      return; // Stop the checkout
+    }
+
+    // If everything is filled out correctly, proceed to package the order
     let finalDeliveryStr = deliveryMethod;
-    if (deliveryMethod === 'STORE_PICKUP_NEPALGUNJ' && pickupDetails) finalDeliveryStr += ` (Person: ${pickupDetails})`;
-    if (deliveryMethod === 'BY_TRANSPORT' && transportDetails) finalDeliveryStr += ` (Transport: ${transportDetails})`;
-    if (deliveryMethod === 'BY_BUS' && busDetails) finalDeliveryStr += ` (Bus: ${busDetails})`;
+    if (deliveryMethod === 'STORE_PICKUP_NEPALGUNJ') finalDeliveryStr += ` (Person: ${pickupDetails})`;
+    if (deliveryMethod === 'BY_TRANSPORT') finalDeliveryStr += ` (Transport: ${transportDetails})`;
+    if (deliveryMethod === 'BY_BUS') finalDeliveryStr += ` (Bus: ${busDetails})`;
     
     executeCheckout(finalDeliveryStr, paymentTerms);
   };
@@ -103,18 +124,19 @@ export const Cart: React.FC = () => {
             <option value="BY_BUS">By Bus</option>
           </select>
 
-          <div style={{ backgroundColor: '#f8fafc', padding: '12px', borderRadius: '6px', border: '1px dashed #cbd5e1' }}>
-            <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: theme.primaryColor, fontWeight: 'bold' }}>
-              ℹ️ Optional: Enter details below to facilitate the delivery process.
+          {/* Changed this box to highlight that it is REQUIRED */}
+          <div style={{ backgroundColor: '#fef2f2', padding: '12px', borderRadius: '6px', border: '1px solid #f87171' }}>
+            <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: '#dc2626', fontWeight: 'bold' }}>
+              ⚠️ Required: Enter dispatch details below to proceed.
             </p>
             {deliveryMethod === 'STORE_PICKUP_NEPALGUNJ' && (
-              <input type="text" placeholder="Person coming to collect (Name & Phone)" value={pickupDetails} onChange={(e) => setPickupDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}/>
+              <input type="text" placeholder="Person coming to collect (Name & Phone)" value={pickupDetails} onChange={(e) => setPickupDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #fca5a5', boxSizing: 'border-box', fontSize: '13px' }}/>
             )}
             {deliveryMethod === 'BY_TRANSPORT' && (
-              <input type="text" placeholder="Preferred Transport Name & Contact Number" value={transportDetails} onChange={(e) => setTransportDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}/>
+              <input type="text" placeholder="Preferred Transport Name & Contact Number" value={transportDetails} onChange={(e) => setTransportDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #fca5a5', boxSizing: 'border-box', fontSize: '13px' }}/>
             )}
             {deliveryMethod === 'BY_BUS' && (
-              <input type="text" placeholder="Bus Number & Driver Mobile Number" value={busDetails} onChange={(e) => setBusDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}/>
+              <input type="text" placeholder="Bus Number & Driver Mobile Number" value={busDetails} onChange={(e) => setBusDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #fca5a5', boxSizing: 'border-box', fontSize: '13px' }}/>
             )}
           </div>
         </div>
@@ -132,7 +154,6 @@ export const Cart: React.FC = () => {
             </option>
           </select>
 
-          {/* CONDITIONAL PAYMENT UI */}
           {['BANK_DEPOSIT', 'CONNECT_IPS'].includes(paymentTerms) && (
             <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '16px', borderRadius: '6px', marginTop: '12px', color: '#166534', fontSize: '14px' }}>
               <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', fontSize: '15px' }}>🏦 Account Details:</p>
