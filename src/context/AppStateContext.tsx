@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { UserSession, CartItem, Order, ToastMessage, Product, UserRole } from '../types';
 
-// This defines the exact instructions the brain can understand and process
 interface AppStateContextProps {
   session: UserSession;
   cart: CartItem[];
@@ -22,10 +21,8 @@ interface AppStateContextProps {
 const AppStateContext = createContext<AppStateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 1. NAVIGATION STATE: Starts the user on the home screen
   const [currentScreen, setCurrentScreen] = useState<string>('home');
   
-  // 2. USER SESSION STATE: Defaults to a public, logged-out visitor
   const [session, setSession] = useState<UserSession>({
     isAuthenticated: false,
     role: 'PUBLIC',
@@ -33,34 +30,33 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     kycStatus: 'NOT_SUBMITTED'
   });
   
-  // 3. E-COMMERCE STATE: Cart and Order History
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  
-  // 4. NOTIFICATION STATE: Pop-up messages
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-
-  // --- BRAIN FUNCTIONS ---
 
   const navigateTo = (path: string) => {
     setCurrentScreen(path);
-    window.scrollTo(0, 0); // Automatically scrolls to the top of the new page
-  };
-
-  const pushToast = (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => {
-    const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, title, message, type }]);
+    window.scrollTo(0, 0); 
   };
 
   const clearToast = (id: string) => {
     setToasts((prev) => prev.filter(t => t.id !== id));
   };
 
-  // Simulates logging in as different types of users (Dealer, Wholesaler, Admin)
+  const pushToast = (title: string, message: string, type: 'success' | 'error' | 'warning' | 'info') => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts((prev) => [...prev, { id, title, message, type }]);
+    
+    // THE FIX: Automatically sweep away the toast after 4 seconds (4000 milliseconds)
+    setTimeout(() => {
+      setToasts((prev) => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
   const switchRole = (role: UserRole) => {
     if (role === 'PUBLIC') {
       setSession({ isAuthenticated: false, role: 'PUBLIC', username: 'Guest Visitor', kycStatus: 'NOT_SUBMITTED' });
-      setCart([]); // Clear cart on logout
+      setCart([]); 
       pushToast("Session Closed", "Logged out securely. Viewing as public visitor.", "info");
     } else {
       setSession({
@@ -80,7 +76,6 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const addToCart = (product: Product, quantity: number) => {
-    // Validates against the Minimum Order Quantity (MOQ) from the BUSY spreadsheet
     if (quantity < product.minimumOrderQuantity) {
       pushToast("Validation Error", `This item requires a minimum order quantity of ${product.minimumOrderQuantity}`, "error");
       return;
@@ -108,7 +103,6 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const executeCheckout = (deliveryMethod: string, paymentMethod: string) => {
     if (cart.length === 0) return;
     
-    // Calculates final pricing based on the user's role (Dealer vs Wholesale vs Public)
     const newOrder: Order = {
       id: `ord-${Math.random().toString(36).substring(2, 9)}`,
       orderNumber: `BT-2026-${Math.floor(10000 + Math.random() * 90000)}`,
@@ -135,12 +129,11 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     setOrders(prev => [newOrder, ...prev]);
-    setCart([]); // Empty the cart after successful checkout
+    setCart([]); 
     pushToast("Order Placed Successfully", `Your order reference is: ${newOrder.orderNumber}`, "success");
-    navigateTo('dealer-portal'); // Send user to dashboard to see their order
+    navigateTo('dealer-portal'); 
   };
 
-  // This wraps our entire application, giving every button and screen access to the brain
   return (
     <AppStateContext.Provider value={{
       session, cart, orders, toasts, currentScreen, 
@@ -151,7 +144,6 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 };
 
-// A custom hook so other files can easily tap into the brain's data
 export const useAppState = () => {
   const context = useContext(AppStateContext);
   if (!context) {
