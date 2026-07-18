@@ -6,7 +6,6 @@ import { GLOBAL_TENANT_DATA } from '../data/tenantConfig';
 import { getThemeTokens } from '../utils/themeEngine';
 
 export const Home: React.FC = () => {
-  // We bring in tFix so we can protect our new text from bad translations
   const { navigateTo, session, tFix } = useAppState();
   const theme = getThemeTokens(GLOBAL_TENANT_DATA.currentTheme);
   const featuredProducts = B2B_PRODUCTS_CATALOG.filter(p => p.isFeatured);
@@ -17,12 +16,12 @@ export const Home: React.FC = () => {
       <section style={{ background: theme.bannerBackground, color: theme.bannerTextColor, padding: '80px 20px', textAlign: 'center', borderBottom: `4px solid ${theme.accentColor}` }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           
-          {/* THE NEW TRACTOR-SPECIFIC TEXT IS HERE */}
           <span style={{ fontSize: '14px', fontWeight: 'bold', color: theme.accentColor, letterSpacing: '2px', textTransform: 'uppercase', display: 'block', marginBottom: '16px' }}>
             {tFix("PREMIUM TRACTOR SPARES & AGRI IMPLEMENTS")}
           </span>
           
-          <h1 style={{ fontSize: '46px', margin: '0 0 24px 0', fontWeight: '800', lineHeight: '1.2' }}>
+          {/* We added className="notranslate" here to protect the brand name */}
+          <h1 className="notranslate" style={{ fontSize: '46px', margin: '0 0 24px 0', fontWeight: '800', lineHeight: '1.2' }}>
             {GLOBAL_TENANT_DATA.businessName}
           </h1>
           <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.85)', margin: '0 0 40px 0', lineHeight: '1.6' }}>
