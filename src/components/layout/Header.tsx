@@ -23,7 +23,8 @@ export const Header: React.FC = () => {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', maxWidth: '1400px', margin: '0 auto' }}>
         
-        <div onClick={() => navigateTo('home')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* CHANGED: Clicking the logo now takes them directly to the products catalog */}
+        <div onClick={() => navigateTo('products')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
           {GLOBAL_TENANT_DATA.logoUrl ? (
             <img src={GLOBAL_TENANT_DATA.logoUrl} alt="Logo" style={{ height: '45px', objectFit: 'contain' }} />
           ) : (
@@ -32,7 +33,6 @@ export const Header: React.FC = () => {
             </div>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', borderLeft: '2px solid #cbd5e1', paddingLeft: '12px' }}>
-            {/* Added className="notranslate" to the brand text here */}
             <span className="notranslate" style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', letterSpacing: '0.5px' }}>
               {GLOBAL_TENANT_DATA.businessName.toUpperCase()}
             </span>
