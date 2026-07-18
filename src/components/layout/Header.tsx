@@ -25,7 +25,7 @@ export const Header: React.FC = () => {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', maxWidth: '1400px', margin: '0 auto' }}>
         
-        {/* UPDATED BRAND LOGO AREA */}
+        {/* BRAND LOGO AND NAME AREA */}
         <div onClick={() => navigateTo('home')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
           {GLOBAL_TENANT_DATA.logoUrl ? (
             <img 
@@ -35,12 +35,19 @@ export const Header: React.FC = () => {
             />
           ) : (
             <div style={{ padding: '8px 14px', backgroundColor: theme.primaryColor, color: '#fff', fontWeight: 900, borderRadius: '4px', letterSpacing: '1px', fontSize: '18px' }}>
-              {GLOBAL_TENANT_DATA.businessName.toUpperCase()}
+              {GLOBAL_TENANT_DATA.businessName.substring(0, 2).toUpperCase()}
             </div>
           )}
-          <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#64748b', borderLeft: '2px solid #cbd5e1', paddingLeft: '12px' }}>
-            B2B WHOLESALE ENGINE
-          </span>
+          
+          {/* We added the Business Name text right next to the logo here */}
+          <div style={{ display: 'flex', flexDirection: 'column', borderLeft: '2px solid #cbd5e1', paddingLeft: '12px' }}>
+            <span style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', letterSpacing: '0.5px' }}>
+              {GLOBAL_TENANT_DATA.businessName.toUpperCase()}
+            </span>
+            <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#64748b', letterSpacing: '1px' }}>
+              B2B WHOLESALE ENGINE
+            </span>
+          </div>
         </div>
 
         <nav style={{ display: 'flex', gap: '24px' }}>
