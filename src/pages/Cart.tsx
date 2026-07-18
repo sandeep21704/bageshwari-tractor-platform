@@ -4,15 +4,14 @@ import { GLOBAL_TENANT_DATA } from '../data/tenantConfig';
 import { getThemeTokens } from '../utils/themeEngine';
 
 export const Cart: React.FC = () => {
-  // We added tFix here to protect your translations!
   const { cart, session, updateCartQty, removeFromCart, executeCheckout, navigateTo, tFix } = useAppState();
   const theme = getThemeTokens(GLOBAL_TENANT_DATA.currentTheme);
   
-  // Updated default delivery method
   const [deliveryMethod, setDeliveryMethod] = useState<string>('STORE_PICKUP_NEPALGUNJ');
-  const [paymentTerms, setPaymentTerms] = useState<string>('CASH_ON_DELIVERY');
+  
+  // Default to Bank Deposit now
+  const [paymentTerms, setPaymentTerms] = useState<string>('BANK_DEPOSIT');
 
-  // NEW: State to hold the optional logistics details
   const [pickupDetails, setPickupDetails] = useState('');
   const [transportDetails, setTransportDetails] = useState('');
   const [busDetails, setBusDetails] = useState('');
@@ -25,7 +24,6 @@ export const Cart: React.FC = () => {
 
   const totalSummary = cart.reduce((sum, item) => sum + (calcItemPrice(item.product) * item.quantity), 0);
 
-  // This function packages the notes with the delivery method before sending it to the Core Brain
   const handleCheckout = () => {
     let finalDeliveryStr = deliveryMethod;
     if (deliveryMethod === 'STORE_PICKUP_NEPALGUNJ' && pickupDetails) finalDeliveryStr += ` (Person: ${pickupDetails})`;
@@ -96,7 +94,7 @@ export const Cart: React.FC = () => {
           {tFix("Checkout Options")}
         </h3>
         
-        {/* UPDATED DELIVERY LOGIC */}
+        {/* DELIVERY METHOD */}
         <div style={{ marginBottom: '20px' }}>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '6px', color: '#475569' }}>DELIVERY METHOD</label>
           <select value={deliveryMethod} onChange={(e) => setDeliveryMethod(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #cbd5e1', marginBottom: '12px' }}>
@@ -105,53 +103,66 @@ export const Cart: React.FC = () => {
             <option value="BY_BUS">By Bus</option>
           </select>
 
-          {/* Conditional Logistics Input Form */}
           <div style={{ backgroundColor: '#f8fafc', padding: '12px', borderRadius: '6px', border: '1px dashed #cbd5e1' }}>
             <p style={{ margin: '0 0 10px 0', fontSize: '12px', color: theme.primaryColor, fontWeight: 'bold' }}>
               ℹ️ Optional: Enter details below to facilitate the delivery process.
             </p>
-            
             {deliveryMethod === 'STORE_PICKUP_NEPALGUNJ' && (
-              <input 
-                type="text" 
-                placeholder="Person coming to collect (Name & Phone for verification)" 
-                value={pickupDetails}
-                onChange={(e) => setPickupDetails(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}
-              />
+              <input type="text" placeholder="Person coming to collect (Name & Phone)" value={pickupDetails} onChange={(e) => setPickupDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}/>
             )}
-
             {deliveryMethod === 'BY_TRANSPORT' && (
-              <input 
-                type="text" 
-                placeholder="Preferred Transport Name & Contact Number" 
-                value={transportDetails}
-                onChange={(e) => setTransportDetails(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}
-              />
+              <input type="text" placeholder="Preferred Transport Name & Contact Number" value={transportDetails} onChange={(e) => setTransportDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}/>
             )}
-
             {deliveryMethod === 'BY_BUS' && (
-              <input 
-                type="text" 
-                placeholder="Bus Number & Driver Mobile Number" 
-                value={busDetails}
-                onChange={(e) => setBusDetails(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}
-              />
+              <input type="text" placeholder="Bus Number & Driver Mobile Number" value={busDetails} onChange={(e) => setBusDetails(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '13px' }}/>
             )}
           </div>
         </div>
 
+        {/* PAYMENT METHOD */}
         <div style={{ marginBottom: '24px' }}>
           <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold', marginBottom: '6px', color: '#475569' }}>PAYMENT METHOD</label>
           <select value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #cbd5e1' }}>
+            <option value="BANK_DEPOSIT">Bank Deposit / Transfer</option>
+            <option value="CONNECT_IPS">Connect IPS</option>
+            <option value="FONEPAY_QR">Fonepay QR</option>
             <option value="CASH_ON_DELIVERY">Cash on Delivery (COD)</option>
-            <option value="BANK_WIRE_TRANSFER">Bank Transfer / eSewa</option>
             <option value="DEALER_CREDIT_FACILITY" disabled={session.role !== 'DEALER'}>
               Credit Account (Dealers Only)
             </option>
           </select>
+
+          {/* CONDITIONAL PAYMENT UI */}
+          {['BANK_DEPOSIT', 'CONNECT_IPS'].includes(paymentTerms) && (
+            <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '16px', borderRadius: '6px', marginTop: '12px', color: '#166534', fontSize: '14px' }}>
+              <p style={{ margin: '0 0 10px 0', fontWeight: 'bold', fontSize: '15px' }}>🏦 Account Details:</p>
+              <div style={{ display: 'grid', gap: '6px' }}>
+                <div><strong>Bank:</strong> {GLOBAL_TENANT_DATA.paymentDetails.bankName}</div>
+                <div><strong>Account Name:</strong> {GLOBAL_TENANT_DATA.paymentDetails.accountName}</div>
+                <div><strong>Account No:</strong> {GLOBAL_TENANT_DATA.paymentDetails.accountNumber}</div>
+                <div><strong>Branch:</strong> {GLOBAL_TENANT_DATA.paymentDetails.branch}</div>
+              </div>
+              <div style={{ marginTop: '12px', padding: '10px', backgroundColor: '#fff', borderLeft: '4px solid #f59e0b', fontSize: '13px', color: '#92400e', fontWeight: '600' }}>
+                ⚠️ Important: Please mention your Order Number (which you will receive after clicking Checkout) in the transaction remarks so we can update our records!
+              </div>
+            </div>
+          )}
+
+          {paymentTerms === 'FONEPAY_QR' && (
+            <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '16px', borderRadius: '6px', marginTop: '12px', color: '#166534', textAlign: 'center' }}>
+              <p style={{ margin: '0 0 16px 0', fontWeight: 'bold', fontSize: '15px' }}>📱 Scan to Pay with Fonepay:</p>
+              {GLOBAL_TENANT_DATA.paymentDetails.fonepayQrUrl ? (
+                <img src={GLOBAL_TENANT_DATA.paymentDetails.fonepayQrUrl} alt="Fonepay QR Code" style={{ width: '200px', height: '200px', objectFit: 'contain', margin: '0 auto', border: '2px solid #22c55e', borderRadius: '8px', padding: '4px', backgroundColor: '#fff' }} />
+              ) : (
+                <div style={{ width: '200px', height: '200px', backgroundColor: '#fff', border: '2px dashed #22c55e', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', color: '#16a34a', fontWeight: 'bold' }}>
+                  [Upload QR to /public/qr.png]
+                </div>
+              )}
+              <div style={{ marginTop: '16px', padding: '10px', backgroundColor: '#fff', borderLeft: '4px solid #f59e0b', fontSize: '13px', color: '#92400e', fontWeight: '600', textAlign: 'left' }}>
+                ⚠️ Important: Please mention your Order Number (which you will receive after clicking Checkout) in the Fonepay remarks so we can update our records!
+              </div>
+            </div>
+          )}
         </div>
 
         <div style={{ backgroundColor: '#f8fafc', padding: '20px', borderRadius: '6px', marginBottom: '20px', border: '1px solid #e2e8f0' }}>
