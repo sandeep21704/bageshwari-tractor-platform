@@ -9,7 +9,7 @@ export interface TenantConfiguration {
   currentTheme: SeasonalTheme;
   currencySymbol: string;
   defaultMoqEnforced: boolean;
-  logoUrl: string; // <-- We added the logo requirement here
+  logoUrl: string;
   contact: {
     hotlines: string[];
     whatsappNumber: string;
@@ -17,6 +17,14 @@ export interface TenantConfiguration {
     hqAddress: string;
     district: string;
     country: string;
+  };
+  // NEW: White-label About Us data structure
+  aboutUs: {
+    history: string;
+    mission: string;
+    vision: string;
+    establishedYear: string;
+    coreValues: Array<{ title: string; description: string; icon: string }>;
   };
 }
 
@@ -28,8 +36,6 @@ export const GLOBAL_TENANT_DATA: TenantConfiguration = {
   currentTheme: "WINTER_CLEAN", 
   currencySymbol: "NPR",
   defaultMoqEnforced: true,
-  // If you uploaded to the public folder, use "/logo.png". 
-  // If you have a web link, paste it between the quotes like "https://example.com/my-logo.png"
   logoUrl: "/logo.png", 
   contact: {
     hotlines: ["9704588501", "9704588502"],
@@ -38,5 +44,17 @@ export const GLOBAL_TENANT_DATA: TenantConfiguration = {
     hqAddress: "Nepalgunj, Banke",
     district: "Banke",
     country: "Nepal"
+  },
+  // NEW: The specific story and values for Bageshwari Tractor
+  aboutUs: {
+    history: "Founded as a regional supplier in Nepalgunj, we have spent years mastering the logistics of heavy machinery spares. Today, we are transforming the B2B supply chain, upgrading from traditional ledger systems to a fully automated digital procurement platform.",
+    mission: "To empower dealers, wholesalers, and agricultural workshops with reliable, high-quality spare parts and seamless B2B technology.",
+    vision: "To become the undisputed digital and physical backbone of agricultural and industrial machinery distribution across the nation.",
+    establishedYear: "1998",
+    coreValues: [
+      { title: "Genuine Quality", description: "We source directly from verified manufacturers and trusted brands to ensure field reliability.", icon: "🛡️" },
+      { title: "B2B Innovation", description: "Pioneering digital wholesale platforms for faster, smarter, and transparent ordering.", icon: "🚀" },
+      { title: "Reliable Logistics", description: "Ensuring timely dispatch and delivery across regional and national networks.", icon: "📦" }
+    ]
   }
 };
