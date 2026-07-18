@@ -27,12 +27,15 @@ export const Header: React.FC = () => {
           {GLOBAL_TENANT_DATA.logoUrl ? (
             <img src={GLOBAL_TENANT_DATA.logoUrl} alt="Logo" style={{ height: '45px', objectFit: 'contain' }} />
           ) : (
-            <div style={{ padding: '8px 14px', backgroundColor: theme.primaryColor, color: '#fff', fontWeight: 900, borderRadius: '4px', letterSpacing: '1px', fontSize: '18px' }}>
+            <div className="notranslate" style={{ padding: '8px 14px', backgroundColor: theme.primaryColor, color: '#fff', fontWeight: 900, borderRadius: '4px', letterSpacing: '1px', fontSize: '18px' }}>
               {GLOBAL_TENANT_DATA.businessName.substring(0, 2).toUpperCase()}
             </div>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', borderLeft: '2px solid #cbd5e1', paddingLeft: '12px' }}>
-            <span style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', letterSpacing: '0.5px' }}>{GLOBAL_TENANT_DATA.businessName.toUpperCase()}</span>
+            {/* Added className="notranslate" to the brand text here */}
+            <span className="notranslate" style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', letterSpacing: '0.5px' }}>
+              {GLOBAL_TENANT_DATA.businessName.toUpperCase()}
+            </span>
             <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#64748b', letterSpacing: '1px' }}>
               {tFix("ONLINE STORE")}
             </span>
@@ -47,7 +50,6 @@ export const Header: React.FC = () => {
                 background: 'none', border: 'none', padding: '8px 0', fontSize: '15px', fontWeight: isActive ? '700' : '500',
                 color: isActive ? theme.accentColor : '#0f172a', borderBottom: isActive ? `2px solid ${theme.accentColor}` : '2px solid transparent', cursor: 'pointer'
               }}>
-                {/* Apply the shield to the navigation links! */}
                 {tFix(item.label)}
               </button>
             );
