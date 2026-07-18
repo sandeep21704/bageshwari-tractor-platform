@@ -5,7 +5,7 @@ import { GLOBAL_TENANT_DATA } from '../../data/tenantConfig';
 import { getThemeTokens } from '../../utils/themeEngine';
 
 export const Header: React.FC = () => {
-  const { session, cart, currentScreen, navigateTo } = useAppState();
+  const { session, cart, currentScreen, navigateTo, tFix } = useAppState();
   const theme = getThemeTokens(GLOBAL_TENANT_DATA.currentTheme);
   
   const allowedNav = MAIN_NAVIGATION.filter(item => item.rolesPermitted.includes(session.role));
@@ -14,13 +14,10 @@ export const Header: React.FC = () => {
   return (
     <header style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: '#ffffff', fontFamily: 'sans-serif' }}>
       <div style={{ backgroundColor: theme.primaryColor, color: '#ffffff', padding: '8px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', flexWrap: 'wrap', gap: '10px' }}>
-        <div>📍 Location: {GLOBAL_TENANT_DATA.contact.hqAddress}, {GLOBAL_TENANT_DATA.contact.district}</div>
+        <div>📍 {tFix("Location:")} {GLOBAL_TENANT_DATA.contact.hqAddress}, {GLOBAL_TENANT_DATA.contact.district}</div>
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <span>📞 Support: {GLOBAL_TENANT_DATA.contact.hotlines.join(" / ")}</span>
-          
-          {/* THE GOOGLE TRANSLATE WIDGET GOES HERE */}
+          <span>📞 {tFix("Support:")} {GLOBAL_TENANT_DATA.contact.hotlines.join(" / ")}</span>
           <div id="google_translate_element" style={{ backgroundColor: '#ffffff', borderRadius: '4px', padding: '2px', height: '28px', overflow: 'hidden' }}></div>
-          
         </div>
       </div>
       
@@ -36,7 +33,9 @@ export const Header: React.FC = () => {
           )}
           <div style={{ display: 'flex', flexDirection: 'column', borderLeft: '2px solid #cbd5e1', paddingLeft: '12px' }}>
             <span style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a', letterSpacing: '0.5px' }}>{GLOBAL_TENANT_DATA.businessName.toUpperCase()}</span>
-            <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#64748b', letterSpacing: '1px' }}>ONLINE STORE</span>
+            <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#64748b', letterSpacing: '1px' }}>
+              {tFix("ONLINE STORE")}
+            </span>
           </div>
         </div>
 
@@ -48,7 +47,8 @@ export const Header: React.FC = () => {
                 background: 'none', border: 'none', padding: '8px 0', fontSize: '15px', fontWeight: isActive ? '700' : '500',
                 color: isActive ? theme.accentColor : '#0f172a', borderBottom: isActive ? `2px solid ${theme.accentColor}` : '2px solid transparent', cursor: 'pointer'
               }}>
-                {item.label}
+                {/* Apply the shield to the navigation links! */}
+                {tFix(item.label)}
               </button>
             );
           })}
@@ -56,7 +56,7 @@ export const Header: React.FC = () => {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <button onClick={() => navigateTo('cart')} style={{ position: 'relative', background: '#f1f5f9', border: 'none', padding: '10px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>
-            🛒 Cart
+            🛒 {tFix("Cart")}
             {totalCartCount > 0 && (
               <span style={{ position: 'absolute', top: '-6px', right: '-6px', backgroundColor: theme.badgeBackground, color: '#fff', fontSize: '12px', borderRadius: '50%', padding: '2px 8px', fontWeight: 'bold' }}>{totalCartCount}</span>
             )}
