@@ -9,5 +9,6 @@ export const OVERRIDE_DICTIONARY: Record<string, string> = {
   "Location:": "स्थान:",
   "Support:": "सम्पर्क:",
   "WhatsApp Us": "ह्वाट्सएप",
-  "Order Manifest": "अर्डर फारम"
+  "Order History": "अर्डर इतिहास",
+  "Checkout Options": "चेकआउट विकल्पहरू"
 };
