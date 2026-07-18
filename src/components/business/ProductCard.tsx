@@ -97,7 +97,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <button onClick={() => addToCart(product, qty)} style={{
             width: '100%', padding: '9px', backgroundColor: theme.primaryColor, color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px', transition: 'opacity 0.2s'
           }}>
-            🛒 Add to Order
+            🛒 Add to Cart
           </button>
         </div>
       </div>
