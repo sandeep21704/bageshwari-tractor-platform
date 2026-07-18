@@ -3,36 +3,24 @@ import { useAppState } from '../../context/AppStateContext';
 import { MAIN_NAVIGATION } from '../../data/navigation';
 import { GLOBAL_TENANT_DATA } from '../../data/tenantConfig';
 import { getThemeTokens } from '../../utils/themeEngine';
-import { TranslationKey } from '../../utils/translations';
 
 export const Header: React.FC = () => {
-  const { session, cart, currentScreen, navigateTo, t, toggleLanguage } = useAppState();
+  const { session, cart, currentScreen, navigateTo } = useAppState();
   const theme = getThemeTokens(GLOBAL_TENANT_DATA.currentTheme);
   
   const allowedNav = MAIN_NAVIGATION.filter(item => item.rolesPermitted.includes(session.role));
   const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Helper to map English paths to our dictionary keys
-  const getNavTranslationKey = (path: string): TranslationKey => {
-    if (path === 'home') return 'nav_home';
-    if (path === 'products') return 'nav_products';
-    if (path === 'about') return 'nav_about';
-    if (path === 'dealer-portal' && !session.isAuthenticated) return 'nav_dealer';
-    if (path === 'dealer-portal' && session.isAuthenticated) return 'nav_dashboard';
-    return 'nav_devtools';
-  };
-
   return (
     <header style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: '#ffffff', fontFamily: 'sans-serif' }}>
-      <div style={{ backgroundColor: theme.primaryColor, color: '#ffffff', padding: '8px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
-        <div>📍 {t('location')} {GLOBAL_TENANT_DATA.contact.hqAddress}, {GLOBAL_TENANT_DATA.contact.district}</div>
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-          <span>📞 {t('support')} {GLOBAL_TENANT_DATA.contact.hotlines.join(" / ")}</span>
+      <div style={{ backgroundColor: theme.primaryColor, color: '#ffffff', padding: '8px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', flexWrap: 'wrap', gap: '10px' }}>
+        <div>📍 Location: {GLOBAL_TENANT_DATA.contact.hqAddress}, {GLOBAL_TENANT_DATA.contact.district}</div>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span>📞 Support: {GLOBAL_TENANT_DATA.contact.hotlines.join(" / ")}</span>
           
-          {/* THE LANGUAGE TOGGLE BUTTON */}
-          <button onClick={toggleLanguage} style={{ backgroundColor: theme.accentColor, color: '#0f172a', border: 'none', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}>
-            🌐 {t('switch_lang')}
-          </button>
+          {/* THE GOOGLE TRANSLATE WIDGET GOES HERE */}
+          <div id="google_translate_element" style={{ backgroundColor: '#ffffff', borderRadius: '4px', padding: '2px', height: '28px', overflow: 'hidden' }}></div>
+          
         </div>
       </div>
       
@@ -55,13 +43,12 @@ export const Header: React.FC = () => {
         <nav style={{ display: 'flex', gap: '24px' }}>
           {allowedNav.map(item => {
             const isActive = currentScreen === item.path;
-            const translatedLabel = t(getNavTranslationKey(item.path));
             return (
               <button key={item.path} onClick={() => navigateTo(item.path)} style={{
                 background: 'none', border: 'none', padding: '8px 0', fontSize: '15px', fontWeight: isActive ? '700' : '500',
                 color: isActive ? theme.accentColor : '#0f172a', borderBottom: isActive ? `2px solid ${theme.accentColor}` : '2px solid transparent', cursor: 'pointer'
               }}>
-                {translatedLabel}
+                {item.label}
               </button>
             );
           })}
@@ -69,7 +56,7 @@ export const Header: React.FC = () => {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <button onClick={() => navigateTo('cart')} style={{ position: 'relative', background: '#f1f5f9', border: 'none', padding: '10px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a' }}>
-            🛒 {t('cart_button')}
+            🛒 Cart
             {totalCartCount > 0 && (
               <span style={{ position: 'absolute', top: '-6px', right: '-6px', backgroundColor: theme.badgeBackground, color: '#fff', fontSize: '12px', borderRadius: '50%', padding: '2px 8px', fontWeight: 'bold' }}>{totalCartCount}</span>
             )}
@@ -78,7 +65,7 @@ export const Header: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '12px' }}>
             <span style={{ fontWeight: 'bold', color: '#0f172a' }}>{session.username}</span>
             <span style={{ backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '4px', color: '#475569', fontSize: '10px', marginTop: '4px', fontWeight: 'bold' }}>
-              {t('role_label')}: {session.role}
+              Role: {session.role}
             </span>
           </div>
         </div>
