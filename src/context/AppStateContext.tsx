@@ -8,7 +8,7 @@ interface AppStateContextProps {
   orders: Order[];
   toasts: ToastMessage[];
   currentScreen: string;
-  tFix: (text: string) => React.ReactNode; // NEW: The Translation Override Shield
+  tFix: (text: string) => React.ReactNode; 
   switchRole: (role: UserRole) => void;
   submitKYC: (formData: any) => void;
   addToCart: (product: Product, quantity: number) => void;
@@ -23,7 +23,8 @@ interface AppStateContextProps {
 const AppStateContext = createContext<AppStateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentScreen, setCurrentScreen] = useState<string>('home');
+  // CHANGED: The app now immediately launches into the 'products' catalog instead of 'home'
+  const [currentScreen, setCurrentScreen] = useState<string>('products');
   const [isNepali, setIsNepali] = useState<boolean>(false);
   
   const [session, setSession] = useState<UserSession>({
@@ -37,7 +38,6 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [orders, setOrders] = useState<Order[]>([]);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  // 1. THE GOOGLE DETECTOR: Checks every second if the user selected Nepali in the Google widget
   useEffect(() => {
     const checkGoogleLang = setInterval(() => {
       const cookie = document.cookie;
@@ -47,13 +47,10 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return () => clearInterval(checkGoogleLang);
   }, [isNepali]);
 
-  // 2. THE TRANSLATION SHIELD: Replaces specific words and hides them from Google
   const tFix = (text: string) => {
     if (isNepali && OVERRIDE_DICTIONARY[text]) {
-      // The 'notranslate' class is an official command that forces Google Translate to ignore this specific word
       return <span className="notranslate">{OVERRIDE_DICTIONARY[text]}</span>;
     }
-    // If not Nepali or not in dictionary, wrap in span so React doesn't crash when Google changes text
     return <span>{text}</span>;
   };
 
