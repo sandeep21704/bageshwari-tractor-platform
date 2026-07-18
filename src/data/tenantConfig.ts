@@ -69,6 +69,6 @@ export const GLOBAL_TENANT_DATA: TenantConfiguration = {
     accountName: "Bageshwari Tractor",
     accountNumber: "01900105200295",
     branch: "Nepalgunj Branch",
-    fonepayQrUrl: "/qr-png" // You can upload your QR code to the public folder later and put "/qr.png" here!
+    fonepayQrUrl: "/qr.png" // You can upload your QR code to the public folder later and put "/qr.png" here!
   }
 };
