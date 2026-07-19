@@ -8,11 +8,17 @@ export const B2B_PRODUCTS_CATALOG: Product[] = [
     name: "Everest Brand Heavy-Duty Linkage Pin",
     category: "Tractor Components",
     compatibleBrands: ["Mahindra", "Swaraj", "Sonalika"],
-    mrpNPR: 1200,
-    wholesalePriceNPR: 950,
-    dealerPriceNPR: 800,
+    
+    // UPDATED: Matched strictly to types/index.ts
+    baseMrpNPR: 1200,
+    baseWholesalePriceNPR: 950,
+    baseDealerPriceNPR: 800,
+    
     stockQuantity: 450,
     minimumOrderQuantity: 10,
+    reorderLevel: 50,       // ADDED: Required by schema
+    minimumStockLevel: 20,  // ADDED: Required by schema
+    
     packSize: "Box of 10",
     isActive: true,
     isFeatured: true,
@@ -25,11 +31,16 @@ export const B2B_PRODUCTS_CATALOG: Product[] = [
     name: "DLT Deep Groove Ball Bearing",
     category: "Bearings",
     compatibleBrands: ["Universal"],
-    mrpNPR: 450,
-    wholesalePriceNPR: 350,
-    dealerPriceNPR: 280,
+    
+    baseMrpNPR: 450,
+    baseWholesalePriceNPR: 350,
+    baseDealerPriceNPR: 280,
+    
     stockQuantity: 1200,
     minimumOrderQuantity: 50,
+    reorderLevel: 200,
+    minimumStockLevel: 100,
+    
     packSize: "Carton of 50",
     isActive: true,
     isFeatured: true,
@@ -42,11 +53,16 @@ export const B2B_PRODUCTS_CATALOG: Product[] = [
     name: "Aristo High-Tensile Hex Bolt",
     category: "Industrial Fasteners",
     compatibleBrands: ["Universal"],
-    mrpNPR: 85,
-    wholesalePriceNPR: 65,
-    dealerPriceNPR: 50,
+    
+    baseMrpNPR: 85,
+    baseWholesalePriceNPR: 65,
+    baseDealerPriceNPR: 50,
+    
     stockQuantity: 5000,
     minimumOrderQuantity: 100,
+    reorderLevel: 1000,
+    minimumStockLevel: 500,
+    
     packSize: "Box of 100",
     isActive: true,
     isFeatured: false,
@@ -59,11 +75,16 @@ export const B2B_PRODUCTS_CATALOG: Product[] = [
     name: "Bhumiputra Mini Tiller Rotary Attachment",
     category: "Agri Implements",
     compatibleBrands: ["Honda", "Kama", "VST"],
-    mrpNPR: 18500,
-    wholesalePriceNPR: 16000,
-    dealerPriceNPR: 14500,
+    
+    baseMrpNPR: 18500,
+    baseWholesalePriceNPR: 16000,
+    baseDealerPriceNPR: 14500,
+    
     stockQuantity: 24,
     minimumOrderQuantity: 1,
+    reorderLevel: 5,
+    minimumStockLevel: 2,
+    
     packSize: "Single Unit",
     isActive: true,
     isFeatured: true,
