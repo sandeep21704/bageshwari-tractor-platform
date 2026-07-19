@@ -1,41 +1,58 @@
 import React from 'react';
 import { useAppState } from '../context/AppStateContext';
+import { GLOBAL_TENANT_DATA } from '../data/tenantConfig';
+import { getThemeTokens } from '../utils/themeEngine';
 
 export const DevTools: React.FC = () => {
-  const { session, switchRole } = useAppState();
+  const { session, switchRole, tFix } = useAppState();
+  const theme = getThemeTokens(GLOBAL_TENANT_DATA.currentTheme);
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '30px', backgroundColor: '#ffffff', borderRadius: '8px', border: '1px solid #e2e8f0', minHeight: '60vh', fontFamily: 'sans-serif' }}>
-      <h2 style={{ marginTop: 0, color: '#dc2626' }}>🔧 Sandbox Validation & Control Rig</h2>
-      <p style={{ color: '#64748b', marginBottom: '24px' }}>
-        This module allows you to emulate authentication tokens and test wholesale pricing configurations instantly.
-      </p>
-
-      <div style={{ backgroundColor: '#f8fafc', padding: '20px', borderRadius: '6px', marginBottom: '30px', border: '1px solid #e2e8f0' }}>
-        <h3 style={{ marginTop: 0, fontSize: '16px', color: '#0f172a' }}>Current Active Profile</h3>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '14px', color: '#475569' }}>
-          <li style={{ padding: '6px 0' }}><strong>Identity Scope:</strong> {session.role}</li>
-          <li style={{ padding: '6px 0' }}><strong>Operator Name:</strong> {session.username}</li>
-          <li style={{ padding: '6px 0' }}><strong>KYC Pipeline State:</strong> {session.kycStatus}</li>
-        </ul>
+    <div style={{ maxWidth: '800px', margin: '40px auto', padding: '0 20px', minHeight: '80vh', fontFamily: 'sans-serif' }}>
+      
+      <div style={{ marginBottom: '30px', borderBottom: `2px solid ${theme.primaryColor}`, paddingBottom: '16px' }}>
+        <h1 style={{ margin: '0 0 8px 0', color: '#0f172a' }}>{tFix("System DevTools")}</h1>
+        <p style={{ margin: 0, color: '#64748b' }}>Developer panel to simulate different user sessions and test platform behaviors.</p>
       </div>
 
-      <h3 style={{ color: '#0f172a' }}>Emulate B2B Customer Tiers</h3>
-      <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>
-        Clicking these buttons will alter your access level and instantly recalculate all catalog pricing:
-      </p>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-        <button onClick={() => switchRole('PUBLIC')} style={{ padding: '12px 20px', backgroundColor: session.role === 'PUBLIC' ? '#0f172a' : '#e2e8f0', color: session.role === 'PUBLIC' ? '#fff' : '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-          Public (Standard MRP)
-        </button>
-        <button onClick={() => switchRole('REGISTERED_B2B')} style={{ padding: '12px 20px', backgroundColor: session.role === 'REGISTERED_B2B' ? '#0284c7' : '#e2e8f0', color: session.role === 'REGISTERED_B2B' ? '#fff' : '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-          Wholesaler Tier (Level 1 Discount)
-        </button>
-        <button onClick={() => switchRole('DEALER')} style={{ padding: '12px 20px', backgroundColor: session.role === 'DEALER' ? '#16a34a' : '#e2e8f0', color: session.role === 'DEALER' ? '#fff' : '#000', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-          Contracted Dealer (Maximum Discount)
-        </button>
+      <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '24px' }}>
+        <h3 style={{ marginTop: 0, color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
+          Current Session State
+        </h3>
+        <pre style={{ backgroundColor: '#f1f5f9', padding: '16px', borderRadius: '4px', fontSize: '13px', color: '#334155', overflowX: 'auto' }}>
+          {JSON.stringify(session, null, 2)}
+        </pre>
       </div>
+
+      <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+        <h3 style={{ marginTop: 0, color: '#0f172a', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
+          Session Management (Login Simulation)
+        </h3>
+        
+        <div style={{ display: 'grid', gap: '12px', marginTop: '16px' }}>
+          <button 
+            onClick={() => switchRole('PUBLIC')} 
+            style={{ padding: '12px', backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', color: '#0f172a', textAlign: 'left' }}
+          >
+            👤 Logout (Simulate Guest Visitor)
+          </button>
+          
+          <button 
+            onClick={() => switchRole('DEALER')} 
+            style={{ padding: '12px', backgroundColor: '#e0f2fe', border: '1px solid #7dd3fc', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', color: '#0369a1', textAlign: 'left' }}
+          >
+            🏢 Simulate DEALER Login (Wholesale Rates)
+          </button>
+
+          <button 
+            onClick={() => switchRole('ADMIN')} 
+            style={{ padding: '12px', backgroundColor: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', color: '#991b1b', textAlign: 'left' }}
+          >
+            🛡️ Simulate ADMIN Login (Back-Office Access)
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 };
