@@ -90,11 +90,51 @@ export const Header: React.FC = () => {
               </button>
             );
           })}
+          
+          {/* Mobile Registration Button */}
+          {isMobile && session.role === 'PUBLIC' && (
+            <button 
+              onClick={() => handleNavClick('kyc-registration')}
+              style={{
+                backgroundColor: theme.accentColor,
+                color: theme.colors.text.inverse,
+                padding: theme.spacing.md,
+                borderRadius: theme.radii.md,
+                border: 'none',
+                fontWeight: theme.typography.weight.bold,
+                textAlign: 'center',
+                cursor: 'pointer',
+                marginTop: theme.spacing.sm
+              }}
+            >
+              {tFix("Register as Dealer")}
+            </button>
+          )}
         </nav>
 
-        {/* Desktop Cart */}
+        {/* Desktop Cart & User Area */}
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: theme.spacing.xl }}>
+            
+            {/* Desktop Registration Button */}
+            {session.role === 'PUBLIC' && (
+              <button 
+                onClick={() => navigateTo('kyc-registration')}
+                style={{
+                  backgroundColor: theme.accentColor,
+                  color: theme.colors.text.inverse,
+                  padding: `${theme.spacing.sm} ${theme.spacing.lg}`,
+                  borderRadius: theme.radii.md,
+                  border: 'none',
+                  fontWeight: theme.typography.weight.bold,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s'
+                }}
+              >
+                {tFix("Register as Dealer")}
+              </button>
+            )}
+
             <button onClick={() => navigateTo('cart')} style={{ position: 'relative', background: theme.colors.surface.hover, border: 'none', padding: `${theme.spacing.sm} ${theme.spacing.lg}`, borderRadius: theme.radii.md, cursor: 'pointer', fontWeight: theme.typography.weight.bold, color: theme.colors.text.primary }}>
               🛒 {tFix("Cart")}
               {totalCartCount > 0 && <span style={{ position: 'absolute', top: '-6px', right: '-6px', backgroundColor: theme.badgeBackground, color: theme.colors.text.inverse, fontSize: theme.typography.size.xs, borderRadius: theme.radii.circle, padding: '2px 8px', fontWeight: theme.typography.weight.bold }}>{totalCartCount}</span>}
