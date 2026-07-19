@@ -1,7 +1,7 @@
 import React from 'react';
-import { useAppState } from './context/AppStateContext';
+import { AppStateProvider, useAppState } from './context/AppStateContext'; // <-- FIXED: Imported AppStateProvider
 import { Header } from './components/layout/Header'; 
-import { ProductGrid } from './components/business/ProductGrid'; // <-- FIXED: Added '/business/'
+import { ProductGrid } from './components/business/ProductGrid'; 
 import { DealerKYCForm } from './components/DealerKYCForm';
 
 const AppContent: React.FC = () => {
@@ -14,17 +14,18 @@ const AppContent: React.FC = () => {
       <main className="pb-20">
         {currentScreen === 'products' && <ProductGrid />}
         {currentScreen === 'kyc-registration' && <DealerKYCForm />}
-        
-        {/* Placeholders for your other existing screens */}
-        {/* {currentScreen === 'cart' && <Cart />} */}
-        {/* {currentScreen === 'admin' && <AdminPortal />} */}
       </main>
     </div>
   );
 };
 
 export const App: React.FC = () => {
-  return <AppContent />;
+  return (
+    // FIXED: Wrapped the application content inside the state provider
+    <AppStateProvider>
+      <AppContent />
+    </AppStateProvider>
+  );
 };
 
 export default App;
