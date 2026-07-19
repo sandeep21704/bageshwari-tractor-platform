@@ -8,6 +8,7 @@ import { Cart } from './pages/Cart';
 import { DealerPortal } from './pages/DealerPortal';
 import { DevTools } from './pages/DevTools';
 import { About } from './pages/About';
+import { AdminPortal } from './pages/AdminPortal';
 import { Toast } from './components/ui/Toast';
 
 const RenderActiveView: React.FC = () => {
@@ -19,6 +20,7 @@ const RenderActiveView: React.FC = () => {
     case 'dealer-portal': return <DealerPortal />;
     case 'devtools': return <DevTools />;
     case 'about': return <About />;
+    case 'admin': return <AdminPortal />;
     // CHANGED: The default fallback is now the Products catalog
     default: return <Products />;
   }
