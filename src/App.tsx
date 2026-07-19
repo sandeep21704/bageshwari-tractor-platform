@@ -1,30 +1,34 @@
 import React from 'react';
-import { useAppState } from './context/AppStateContext';
-import { Products } from './pages/Products';
-import { DealerPortal } from './pages/DealerPortal';
-import { About } from './pages/About';
-import { AdminDashboard } from './pages/AdminDashboard';
-import { Header } from './components/layout/Header';
+import { AppStateProvider } from './context/AppStateContext'; // Ensure this path is correct
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Toast from './components/Toast';
+import Home from './pages/Home';
+import Products from './pages/Products';
+import Cart from './pages/Cart';
+import DealerPortal from './pages/DealerPortal';
+import AdminDashboard from './pages/AdminDashboard'; // Ensure this matches your file path
+import DevTools from './components/DevTools';
 
-export const App: React.FC = () => {
-  const { currentScreen } = useAppState();
-
-  const RenderActiveView = () => {
-    switch (currentScreen) {
-      case 'products': return <Products />;
-      case 'dealer-portal': return <DealerPortal />;
-      case 'about': return <About />;
-      case 'admin': return <AdminDashboard />;
-      default: return <Products />;
-    }
-  };
-
+const App: React.FC = () => {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main style={{ flex: 1 }}>
-        <RenderActiveView />
-      </main>
-    </div>
+    <AppStateProvider>
+      <div className="app-container">
+        <Header />
+        <main>
+          {/* This is the routing logic */}
+          <Home /> 
+          <Products />
+          <Cart />
+          <DealerPortal />
+          <AdminDashboard />
+          <DevTools />
+        </main>
+        <Footer />
+        <Toast />
+      </div>
+    </AppStateProvider>
   );
 };
+
+export default App;
