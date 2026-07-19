@@ -34,6 +34,12 @@ export interface Product {
   baseWholesalePriceNPR: number;
   baseDealerPriceNPR: number;
   
+  // ---> BACKWARD COMPATIBLE ALIASES (Prevents legacy code crashes)
+  mrpNPR?: number;
+  wholesalePriceNPR?: number;
+  dealerPriceNPR?: number;
+  brandId?: string;
+  
   // Inventory Management (Busy Software Logic)
   stockQuantity: number;
   minimumOrderQuantity: number;
