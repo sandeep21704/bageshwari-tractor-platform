@@ -12,7 +12,7 @@ const AppContent: React.FC = () => {
       <Header />
       
       <main className="pb-20">
-        {currentScreen === 'products' && <ProductGrid />}
+        {{currentScreen === 'products' && <div className="p-20 text-center text-xl">Product Grid is updating...</div>}
         {currentScreen === 'kyc-registration' && <DealerKYCForm />}
       </main>
     </div>
