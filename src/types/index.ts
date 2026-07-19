@@ -1,78 +1,122 @@
+// ---------------------------------------------------------
+// CORE SYSTEM TYPES
+// ---------------------------------------------------------
 export type UserRole = 'PUBLIC' | 'REGISTERED_B2B' | 'DEALER' | 'ADMIN';
-export type KYCStatus = 'NOT_SUBMITTED' | 'PENDING' | 'VERIFIED' | 'REJECTED';
 
 export interface UserSession {
   isAuthenticated: boolean;
   role: UserRole;
   username: string;
+  kycStatus: 'NOT_SUBMITTED' | 'PENDING' | 'VERIFIED' | 'REJECTED';
   companyName?: string;
-  kycStatus: KYCStatus;
 }
 
-export interface Brand {
+export interface ToastMessage {
   id: string;
-  name: string;
-  slug: string;
-  isOwnedBrand: boolean;
-  legalStatusConfigurableKey: string; 
-  brandColorOverride?: string;
+  title: string;
+  message: string;
+  type: 'success' | 'error' | 'warning' | 'info';
 }
 
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  displayOrder: number;
-  isActive: boolean;
-}
-
+// ---------------------------------------------------------
+// 1. PRODUCTS TABLE
+// ---------------------------------------------------------
 export interface Product {
   id: string;
   sku: string;
+  oemPartNumber?: string;      // Optional: For precise mechanical cross-referencing
   name: string;
-  slug: string;
-  brandId: string;
-  categoryId: string;
-  shortDescription: string;
-  fullDescription: string;
-  specifications: Record<string, string>;
-  compatibility: string[];
-  unit: string;
-  packSize: string;
-  dealerPriceNPR: number;
-  wholesalePriceNPR: number;
+  category: string;
+  compatibleBrands?: string[]; // Array of tractor brands (e.g., ["Mahindra", "Swaraj"])
+  
+  // Tiered Pricing
   mrpNPR: number;
+  wholesalePriceNPR: number;
+  dealerPriceNPR: number;
+  
+  // Inventory & Logistics
+  stockQuantity: number;
   minimumOrderQuantity: number;
-  isFeatured: boolean;
+  packSize: string;
   isActive: boolean;
+  
+  // UI Display Extras
+  isFeatured?: boolean;
+  imageUrl?: string;
+  description?: string;
 }
 
+// ---------------------------------------------------------
+// 2. DEALERS TABLE (CRM)
+// ---------------------------------------------------------
+export interface Dealer {
+  id: string;
+  businessName: string;        
+  ownerName: string;
+  panVatNumber: string;        
+  
+  // Contact & Location
+  mobileNumber: string;
+  district: string;
+  territory: 'EASTERN_REGION' | 'WESTERN_REGION' | 'CENTRAL'; 
+  
+  // Financial Standing
+  kycStatus: 'PENDING' | 'VERIFIED' | 'REJECTED';
+  creditLimitNPR: number;      
+  outstandingBalanceNPR: number; 
+  
+  createdAt: string;           
+}
+
+// ---------------------------------------------------------
+// 3. ORDERS TABLE & CART
+// ---------------------------------------------------------
 export interface CartItem {
   product: Product;
+  quantity: number;
+}
+
+export interface OrderLineItem {
+  productId: string;
+  name: string;
+  sku: string;
+  pricePaidNPR: number;
   quantity: number;
 }
 
 export interface Order {
   id: string;
   orderNumber: string;
+  dealerId?: string; // Links to Dealers Table
+  
   date: string;
-  items: Array<{
-    productId: string;
-    name: string;
-    sku: string;
-    pricePaidNPR: number;
-    quantity: number;
-  }>;
   totalAmountNPR: number;
-  status: 'PENDING_REVIEW' | 'PROCESSING' | 'DISPATCHED' | 'DELIVERED';
+  
+  // Status Tracking
+  paymentMethod?: string;
+  paymentStatus?: 'UNPAID' | 'PARTIAL' | 'PAID';
+  status: 'PENDING_REVIEW' | 'PROCESSING' | 'READY_FOR_DISPATCH' | 'COMPLETED' | 'CANCELLED';
+  
+  remarks?: string;
+  items: OrderLineItem[];
 }
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
-
-export interface ToastMessage {
+// ---------------------------------------------------------
+// 4. SHIPMENTS TABLE (LOGISTICS)
+// ---------------------------------------------------------
+export interface Shipment {
   id: string;
-  title: string;
-  message: string;
-  type: ToastType;
+  orderId: string;             // Links to Orders Table
+  
+  dispatchMethod: 'STORE_PICKUP_NEPALGUNJ' | 'BY_TRANSPORT' | 'BY_BUS';
+  
+  // Conditional Logistics Fields
+  courierTransportName?: string; 
+  busNumber?: string;            
+  driverOrContactPhone?: string; 
+  
+  trackingOrBiltyNumber?: string; // e.g., Transport receipt number
+  dispatchDate?: string;          
+  
+  shipmentStatus: 'AWAITING_DISPATCH' | 'IN_TRANSIT' | 'DELIVERED';
 }
