@@ -1,9 +1,8 @@
 import React from 'react';
 import { useAppState } from './context/AppStateContext';
-import { Header } from './components/layout/Header'; // <-- FIXED: Added '/layout/' to the path
-import { ProductGrid } from './components/ProductGrid';
+import { Header } from './components/layout/Header'; 
+import { ProductGrid } from './components/business/ProductGrid'; // <-- FIXED: Added '/business/'
 import { DealerKYCForm } from './components/DealerKYCForm';
-// Import other components you have like Cart, AdminPortal, etc.
 
 const AppContent: React.FC = () => {
   const { currentScreen } = useAppState();
@@ -19,7 +18,6 @@ const AppContent: React.FC = () => {
         {/* Placeholders for your other existing screens */}
         {/* {currentScreen === 'cart' && <Cart />} */}
         {/* {currentScreen === 'admin' && <AdminPortal />} */}
-        {/* {currentScreen === 'dealer-portal' && <DealerPortal />} */}
       </main>
     </div>
   );
