@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppStateProvider, useAppState } from './context/AppStateContext'; // <-- FIXED: Imported AppStateProvider
+import { AppStateProvider, useAppState } from './context/AppStateContext';
 import { Header } from './components/layout/Header'; 
 import { ProductGrid } from './components/business/ProductGrid'; 
 import { DealerKYCForm } from './components/DealerKYCForm';
@@ -12,7 +12,8 @@ const AppContent: React.FC = () => {
       <Header />
       
       <main className="pb-20">
-        {{currentScreen === 'products' && <div className="p-20 text-center text-xl">Product Grid is updating...</div>}
+        {/* Typo fixed, and the real ProductGrid is back! */}
+        {currentScreen === 'products' && <ProductGrid />}
         {currentScreen === 'kyc-registration' && <DealerKYCForm />}
       </main>
     </div>
@@ -21,7 +22,6 @@ const AppContent: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    // FIXED: Wrapped the application content inside the state provider
     <AppStateProvider>
       <AppContent />
     </AppStateProvider>
