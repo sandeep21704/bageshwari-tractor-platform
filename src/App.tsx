@@ -1,39 +1,46 @@
 import React from 'react';
-import { AppStateProvider } from './context/AppStateContext'; 
+import { AppStateProvider, useAppState } from './context/AppStateContext';
+import { Header } from './components/layout/Header';
+import { Footer } from './components/layout/Footer';
+import { Home } from './pages/Home';
+import { Products } from './pages/Products';
+import { Cart } from './pages/Cart';
+import { DealerPortal } from './pages/DealerPortal';
+import { DevTools } from './pages/DevTools';
+import { About } from './pages/About';
+import { Toast } from './components/ui/Toast';
 
-// Layout components from src/components/layout/
-import Header from './components/layout/Header'; 
-import Footer from './components/layout/Footer'; 
+const RenderActiveView: React.FC = () => {
+  const { currentScreen } = useAppState();
+  switch (currentScreen) {
+    case 'home': return <Home />;
+    case 'products': return <Products />;
+    case 'cart': return <Cart />;
+    case 'dealer-portal': return <DealerPortal />;
+    case 'devtools': return <DevTools />;
+    case 'about': return <About />;
+    // CHANGED: The default fallback is now the Products catalog
+    default: return <Products />;
+  }
+};
 
-// UI components from src/components/ui/
-import Toast from './components/ui/Toast';
-
-// Pages from src/pages/
-import Home from './pages/Home';
-import Products from './pages/Products';
-import Cart from './pages/Cart';
-import DealerPortal from './pages/DealerPortal';
-import AdminDashboard from './pages/AdminDashboard';
-import DevTools from './pages/DevTools';
-
-const App: React.FC = () => {
+const MainLayout: React.FC = () => {
   return (
-    <AppStateProvider>
-      <div className="app-container">
-        <Header />
-        <main>
-          <Home /> 
-          <Products />
-          <Cart />
-          <DealerPortal />
-          <AdminDashboard />
-          <DevTools />
-        </main>
-        <Footer />
-        <Toast />
-      </div>
-    </AppStateProvider>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      <Header />
+      <main style={{ flex: 1 }}>
+        <RenderActiveView />
+      </main>
+      <Footer />
+      <Toast />
+    </div>
   );
 };
 
-export default App;
+export default function App() {
+  return (
+    <AppStateProvider>
+      <MainLayout />
+    </AppStateProvider>
+  );
+}
