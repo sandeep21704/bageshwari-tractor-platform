@@ -1,4 +1,5 @@
-export const navigation = [
+// Export the navigation array as MAIN_NAVIGATION
+export const MAIN_NAVIGATION = [
   { name: 'Home', path: '/' },
   { name: 'Products', path: '/products' },
   { name: 'Cart', path: '/cart' },
