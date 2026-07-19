@@ -23,7 +23,7 @@ interface AppStateContextProps {
 const AppStateContext = createContext<AppStateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // CHANGED: The app now immediately launches into the 'products' catalog instead of 'home'
+  // The app now immediately launches into the 'products' catalog instead of 'home'
   const [currentScreen, setCurrentScreen] = useState<string>('products');
   const [isNepali, setIsNepali] = useState<boolean>(false);
   
@@ -81,7 +81,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isAuthenticated: true,
         role: role,
         username: role === 'ADMIN' ? 'System Administrator' : 'Verified User',
-        companyName: "Mid-West Agri Machinery",
+        companyName: "Bageshwari Tractor Pvt. Ltd.",
         kycStatus: role === 'DEALER' ? 'VERIFIED' : 'PENDING'
       });
       pushToast("Authentication Successful", `Access granted as: ${role}`, "success");
@@ -126,12 +126,17 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         quantity: item.quantity 
       })),
       totalAmountNPR: cart.reduce((sum, item) => sum + ((session.role === 'DEALER' ? item.product.dealerPriceNPR : session.role === 'REGISTERED_B2B' ? item.product.wholesalePriceNPR : item.product.mrpNPR) * item.quantity), 0),
-      status: 'PENDING_REVIEW'
+      
+      // NEW: Capturing the checkout fields strictly based on our new schema
+      paymentMethod: paymentMethod,
+      paymentStatus: 'UNPAID',
+      status: 'PENDING_REVIEW',
+      remarks: `Dispatch via: ${deliveryMethod}`
     };
     setOrders(prev => [newOrder, ...prev]);
     setCart([]); 
     pushToast("Order Placed", `Reference: ${newOrder.orderNumber}`, "success");
-    navigateTo('dealer-portal'); 
+    navigateTo('home'); 
   };
 
   return (
