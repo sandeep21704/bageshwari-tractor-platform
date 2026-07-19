@@ -1,48 +1,35 @@
 import React from 'react';
-import { AppStateProvider, useAppState } from './context/AppStateContext';
-import { Header } from './components/layout/Header';
-import { Footer } from './components/layout/Footer';
-import { Home } from './pages/Home';
-import { Products } from './pages/Products';
-import { Cart } from './pages/Cart';
-import { DealerPortal } from './pages/DealerPortal';
-import { DevTools } from './pages/DevTools';
-import { About } from './pages/About';
-import { AdminPortal } from './pages/AdminPortal';
-import { Toast } from './components/ui/Toast';
+import { useAppState } from './context/AppStateContext';
+import { Header } from './components/Header';
+import { ProductGrid } from './components/ProductGrid';
+import { DealerKYCForm } from './components/DealerKYCForm';
+// Import other components you have like Cart, AdminPortal, etc.
 
-const RenderActiveView: React.FC = () => {
+const AppContent: React.FC = () => {
   const { currentScreen } = useAppState();
-  switch (currentScreen) {
-    case 'home': return <Home />;
-    case 'products': return <Products />;
-    case 'cart': return <Cart />;
-    case 'dealer-portal': return <DealerPortal />;
-    case 'devtools': return <DevTools />;
-    case 'about': return <About />;
-    case 'admin': return <AdminPortal />;
-    // CHANGED: The default fallback is now the Products catalog
-    default: return <Products />;
-  }
-};
 
-const MainLayout: React.FC = () => {
+  // This acts as our main router. It listens to the 'currentScreen' state
+  // and swaps out the page components instantly without reloading the browser.
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+      {/* The Header stays at the top of every page */}
       <Header />
-      <main style={{ flex: 1 }}>
-        <RenderActiveView />
+      
+      <main className="pb-20">
+        {currentScreen === 'products' && <ProductGrid />}
+        {currentScreen === 'kyc-registration' && <DealerKYCForm />}
+        
+        {/* Placeholders for your other existing screens */}
+        {/* {currentScreen === 'cart' && <Cart />} */}
+        {/* {currentScreen === 'admin' && <AdminPortal />} */}
+        {/* {currentScreen === 'dealer-portal' && <DealerPortal />} */}
       </main>
-      <Footer />
-      <Toast />
     </div>
   );
 };
 
-export default function App() {
-  return (
-    <AppStateProvider>
-      <MainLayout />
-    </AppStateProvider>
-  );
-}
+export const App: React.FC = () => {
+  return <AppContent />;
+};
+
+export default App;
