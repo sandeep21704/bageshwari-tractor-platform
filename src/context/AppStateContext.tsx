@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserSession, CartItem, Order, ToastMessage, Product, UserRole } from '../types';
 import { OVERRIDE_DICTIONARY } from '../utils/dictionary';
+import { B2B_PRODUCTS_CATALOG } from '../data/products'; // <-- IMPORTED: Your B2B product catalog
 
 interface AppStateContextProps {
   session: UserSession;
+  products: Product[]; // <-- ADDED: Products state exposed globally
   cart: CartItem[];
   orders: Order[];
   toasts: ToastMessage[];
@@ -23,7 +25,6 @@ interface AppStateContextProps {
 const AppStateContext = createContext<AppStateContextProps | undefined>(undefined);
 
 export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // The app now immediately launches into the 'products' catalog instead of 'home'
   const [currentScreen, setCurrentScreen] = useState<string>('products');
   const [isNepali, setIsNepali] = useState<boolean>(false);
   
@@ -34,6 +35,8 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     kycStatus: 'NOT_SUBMITTED'
   });
   
+  // INITIALIZED: Global products state now loaded from B2B catalog
+  const [products] = useState<Product[]>(B2B_PRODUCTS_CATALOG);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -116,32 +119,52 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const executeCheckout = (deliveryMethod: string, paymentMethod: string) => {
     if (cart.length === 0) return;
+    
+    // Helper to determine price based on role using new schema keys
+    const getActivePrice = (prod: Product) => {
+      if (session.role === 'DEALER' || session.role === 'ADMIN' || session.role === 'SALES_REP') return prod.baseDealerPriceNPR;
+      if (session.role === 'REGISTERED_B2B') return prod.baseWholesalePriceNPR;
+      return prod.baseMrpNPR;
+    };
+
+    const baseTotal = cart.reduce((sum, item) => sum + (getActivePrice(item.product) * item.quantity), 0);
+    const vatAmount = baseTotal * 0.13; // 13% Nepalese VAT
+    const grandTotal = baseTotal + vatAmount;
+
     const newOrder: Order = {
       id: `ord-${Math.random().toString(36).substring(2, 9)}`,
       orderNumber: `BT-${Math.floor(10000 + Math.random() * 90000)}`,
       date: new Date().toISOString().split('T')[0],
-      items: cart.map(item => ({ 
-        productId: item.product.id, name: item.product.name, sku: item.product.sku, 
-        pricePaidNPR: session.role === 'DEALER' ? item.product.dealerPriceNPR : session.role === 'REGISTERED_B2B' ? item.product.wholesalePriceNPR : item.product.mrpNPR, 
-        quantity: item.quantity 
-      })),
-      totalAmountNPR: cart.reduce((sum, item) => sum + ((session.role === 'DEALER' ? item.product.dealerPriceNPR : session.role === 'REGISTERED_B2B' ? item.product.wholesalePriceNPR : item.product.mrpNPR) * item.quantity), 0),
       
-      // NEW: Capturing the checkout fields strictly based on our new schema
-      paymentMethod: paymentMethod,
-      paymentStatus: 'UNPAID',
-      status: 'PENDING_REVIEW',
-      remarks: `Dispatch via: ${deliveryMethod}`
+      baseTotalNPR: baseTotal,
+      vatAmountNPR: vatAmount,
+      grandTotalNPR: grandTotal,
+      
+      freightTerms: 'TO_PAY',
+      paymentMethod: paymentMethod as any,
+      orderStatus: 'PENDING_APPROVAL',
+      remarks: `Dispatch via: ${deliveryMethod}`,
+
+      items: cart.map(item => ({ 
+        productId: item.product.id, 
+        name: item.product.name, 
+        sku: item.product.sku, 
+        requestedQty: item.quantity,
+        allocatedQty: item.quantity,
+        backorderedQty: 0,
+        pricePaidExclusiveNPR: getActivePrice(item.product)
+      }))
     };
+
     setOrders(prev => [newOrder, ...prev]);
     setCart([]); 
     pushToast("Order Placed", `Reference: ${newOrder.orderNumber}`, "success");
-    navigateTo('home'); 
+    navigateTo('products'); 
   };
 
   return (
     <AppStateContext.Provider value={{
-      session, cart, orders, toasts, currentScreen, tFix,
+      session, products, cart, orders, toasts, currentScreen, tFix,
       switchRole, submitKYC, addToCart, updateCartQty, removeFromCart, executeCheckout, pushToast, clearToast, navigateTo
     }}>
       {children}
