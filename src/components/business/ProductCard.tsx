@@ -3,7 +3,8 @@ import { Product } from '../../types';
 import { useAppState } from '../../context/AppStateContext';
 import { GLOBAL_TENANT_DATA } from '../../data/tenantConfig';
 import { getThemeTokens } from '../../utils/themeEngine';
-import { BRANDS_REGISTRY } from '../../data/brands';
+// Note: We removed the BRANDS_REGISTRY import because our new B2B schema 
+// uses 'compatibleBrands' to support parts that fit multiple tractors!
 
 interface ProductCardProps {
   product: Product;
@@ -14,9 +15,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const theme = getThemeTokens(GLOBAL_TENANT_DATA.currentTheme);
   
   // Start the quantity selector at the required Minimum Order Quantity (MOQ)
-  const [qty, setQty] = useState<number>(product.minimumOrderQuantity);
+  const [qty, setQty] = useState<number>(product.minimumOrderQuantity || 1);
   
-  const targetBrand = BRANDS_REGISTRY[product.brandId];
+  // Safely display a brand tag using the new compatibleBrands array
+  const brandTag = product.compatibleBrands && product.compatibleBrands.length > 0 
+    ? product.compatibleBrands[0] 
+    : product.category;
 
   return (
     <div style={{
@@ -47,7 +51,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </h3>
         
         <div style={{ display: 'inline-block', fontSize: '11px', padding: '4px 8px', borderRadius: '4px', backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 'bold', marginBottom: '12px' }}>
-          🏷️ {targetBrand?.name || product.brandId}
+          🏷️ {brandTag}
         </div>
 
         {/* Dynamic Pricing Block based on User Role */}
@@ -55,25 +59,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', paddingBottom: session.isAuthenticated ? '6px' : '0', borderBottom: session.isAuthenticated ? '1px dashed #cbd5e1' : 'none' }}>
             <span style={{ color: '#64748b' }}>Market Retail (MRP):</span>
             <span style={{ fontWeight: 'bold', textDecoration: session.isAuthenticated ? 'line-through' : 'none', color: session.isAuthenticated ? '#94a3b8' : '#0f172a' }}>
-              {GLOBAL_TENANT_DATA.currencySymbol} {product.mrpNPR}
+              {/* UPDATED: using baseMrpNPR */}
+              {GLOBAL_TENANT_DATA.currencySymbol} {product.baseMrpNPR}
             </span>
           </div>
           
-          {session.role === 'DEALER' && (
+          {/* UPDATED: Added Admin and Sales Rep so they can see dealer prices too */}
+          {(session.role === 'DEALER' || session.role === 'SALES_REP' || session.role === 'ADMIN') && (
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', paddingTop: '6px', color: theme.primaryColor, fontWeight: 'bold' }}>
               <span>Dealer Rate:</span>
-              <span>{GLOBAL_TENANT_DATA.currencySymbol} {product.dealerPriceNPR}</span>
+              {/* UPDATED: using baseDealerPriceNPR */}
+              <span>{GLOBAL_TENANT_DATA.currencySymbol} {product.baseDealerPriceNPR}</span>
             </div>
           )}
 
           {session.role === 'REGISTERED_B2B' && (
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', paddingTop: '6px', color: theme.secondaryColor, fontWeight: 'bold' }}>
               <span>Wholesale Rate:</span>
-              <span>{GLOBAL_TENANT_DATA.currencySymbol} {product.wholesalePriceNPR}</span>
+              {/* UPDATED: using baseWholesalePriceNPR */}
+              <span>{GLOBAL_TENANT_DATA.currencySymbol} {product.baseWholesalePriceNPR}</span>
             </div>
           )}
 
-          {!session.isAuthenticated && (
+          {session.role === 'PUBLIC' && (
             <div style={{ fontSize: '11px', color: '#ea580c', marginTop: '8px', fontWeight: 'bold', textAlign: 'center' }}>
               🔒 Login to unlock B2B commercial rates
             </div>
@@ -94,7 +102,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           />
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-          <button onClick={() => addToCart(product, qty)} style={{
+          <button onClick={() => addToCart && addToCart(product, qty)} style={{
             width: '100%', padding: '9px', backgroundColor: theme.primaryColor, color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px', transition: 'opacity 0.2s'
           }}>
             🛒 Add to Cart
