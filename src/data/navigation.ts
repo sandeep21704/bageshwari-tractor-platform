@@ -1,9 +1,15 @@
-// Export the navigation array as MAIN_NAVIGATION
-export const MAIN_NAVIGATION = [
-  { name: 'Home', path: '/' },
-  { name: 'Products', path: '/products' },
-  { name: 'Cart', path: '/cart' },
-  { name: 'Dealer Portal', path: '/dealer-portal' },
-  { name: 'Admin Panel', path: '/admin', roles: ['ADMIN'] },
-  { name: 'System Tools', path: '/devtools', roles: ['ADMIN'] }
+export interface NavItem {
+  label: string;
+  path: string;
+  rolesPermitted: string[];
+}
+
+export const MAIN_NAVIGATION: NavItem[] = [
+  { label: "Home", path: "home", rolesPermitted: ["PUBLIC", "REGISTERED_B2B", "DEALER", "ADMIN"] },
+  { label: "Products Catalog", path: "products", rolesPermitted: ["PUBLIC", "REGISTERED_B2B", "DEALER", "ADMIN"] },
+  // NEW: Added the About Us link here
+  { label: "About Us", path: "about", rolesPermitted: ["PUBLIC", "REGISTERED_B2B", "DEALER", "ADMIN"] },
+  { label: "Become a Dealer", path: "dealer-portal", rolesPermitted: ["PUBLIC"] },
+  { label: "Dealer Dashboard", path: "dealer-portal", rolesPermitted: ["REGISTERED_B2B", "DEALER", "ADMIN"] },
+  { label: "System DevTools", path: "devtools", rolesPermitted: ["PUBLIC", "REGISTERED_B2B", "DEALER", "ADMIN"] } 
 ];
