@@ -1,8 +1,7 @@
 import React from 'react';
 import { AppStateProvider } from './context/AppStateContext'; 
-// Updated path to your layout folder
 import Header from './components/layout/Header'; 
-import Footer from './components/Footer';
+import Footer from './components/layout/Footer'; // Corrected path to layout folder
 import Toast from './components/Toast';
 import Home from './pages/Home';
 import Products from './pages/Products';
